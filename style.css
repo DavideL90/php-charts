@@ -5,7 +5,9 @@
 }
 body{
    display: flex;
+   flex-direction: column;
 }
 .chart_cnt{
    margin: auto;
+   margin-bottom: 50px;
 }
