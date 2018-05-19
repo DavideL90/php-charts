@@ -126,8 +126,7 @@
                         generateLineChart(arrayGraph);
                      }
                      else{
-                        generatePieChart(graphName);
-
+                        generatePieChart(arrayGraph);
                      }
                      // incremento il contatore per i successivi id dei grafici
                      cont++
@@ -135,21 +134,33 @@
                }else if(entryWord == 'employee'){
                   //se la parola è employee stampo i grafici employee e guest
                   if((entryWord == <?php echo json_encode($graph['access']); ?>) || (<?php echo json_encode($graph['access']); ?> == 'guest')){
-                     //salvo il nome del grafico cosi da non dover riciclare l'array
-                     var graphName = <?php echo json_encode($key) ?>;
+                     //salvo l'array
+                     var arrayGraph = <?php echo json_encode($graph) ?>;
+                     console.log(arrayGraph);
                      //salvo il tipo per controllare quale funzione chiamare
                      var graphType = <?php echo json_encode($graph['type']) ?>;
-
                      if(graphType == 'line'){
-                        generateLineChart(graphName);
+                        generateLineChart(arrayGraph);
                      }
                      else{
-                        generatePieChart(graphName);
-
+                        generatePieChart(arrayGraph);
                      }
-                     // incremento il contatore per i successivi id dei graifici
-                     cont++
+                     // incremento il contatore per i successivi id dei grafici
+                     cont++;
                   }
+               }
+               else{
+                  var arrayGraph = <?php echo json_encode($graph) ?>;
+                  console.log(arrayGraph);
+                  //salvo il tipo per controllare quale funzione chiamare
+                  var graphType = <?php echo json_encode($graph['type']) ?>;
+                  if(graphType == 'line'){
+                     generateLineChart(arrayGraph);
+                  }
+                  else{
+                     generatePieChart(arrayGraph);
+                  }
+                  cont++;
                }
             <?php } ?>
          }
@@ -173,51 +184,48 @@
                   }
                });
             }
+            else{
+               //prendo le chiavi dell'oggetto data
+               var dataKeys = Object.keys(arrGraph.data);
+               var colorArray = ['orange', 'green', 'red', 'pink', 'brown'];
+               //genero un oggetto dataset da inserire nel grafico
+               var datasetObj = [];
+               for (var i = 0; i <dataKeys.length; i++) {
+                  datasetObj.push({ label: dataKeys[i], data: arrGraph.data[dataKeys[i]], borderColor: colorArray[i]});
+               }
+               var ctx = $('#myChartLine' + cont);
+               var lineChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                     labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                     datasets: datasetObj
+                  }
+               });
+            }
          }
-         // function generatePieChart(){
-         //    var labels = [];
-         //    var values = [];
-         //    <?php foreach ($graphs['fatturato_by_agent']['data'] as $key => $value) { ?>
-         //       labels.push(<?php echo json_encode($key); ?>);
-         //       values.push(<?php echo json_encode($value); ?>);
-         //    <?php } ?>
-         //    var ctx = document.getElementById('myChartPie').getContext('2d');
-         //    var pieChart = new Chart(ctx, {
-         //       type: <?php echo json_encode($graphs['fatturato_by_agent']['type']); ?>,
-         //       data: {
-         //          labels: labels,
-         //          datasets: [{
-         //             data: values,
-         //             backgroundColor: ['orange', 'blue', 'pink', 'yellow']
-         //          }]
+         function generatePieChart(arrGraph){
+            //prendo le chiavi di data da mettere come label
+            var dataKeys = Object.keys(arrGraph.data);
+            //dichiaro un array vuoto per riempirlo con i valori di data
+            var valArray = [];
+            for (var i = 0; i < dataKeys.length; i++) {
+               valArray.push(arrGraph.data[dataKeys[i]]);
+            }
 
-         // function generateMultipleLineChart(){
-         //    var ctx = document.getElementById('myChartLines').getContext('2d');
-         //    var lineChart = new Chart(ctx, {
-         //       type: <?php echo json_encode($graphs['team_efficiency']['type']) ?>,
-         //       data: {
-         //          labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-         //          datasets: [{
-         //             label: 'Team1',
-         //             data: <?php echo json_encode($graphs['team_efficiency']['data']['Team1']) ?>,
-         //             borderColor: 'orange',
-         //             // fill: 'false'
-         //          },
-         //          {
-         //             label: 'Team2',
-         //             data: <?php echo json_encode($graphs['team_efficiency']['data']['Team2']) ?>,
-         //             borderColor: 'green',
-         //             // fill: 'false'
-         //          },
-         //          {
-         //             label: 'Team3',
-         //             data: <?php echo json_encode($graphs['team_efficiency']['data']['Team3']) ?>,
-         //             borderColor: 'red',
-         //             // fill: 'false'
-         //          }]
-         //       }
-         //    });
-         // }
+            $('body').append('<div class="chart_cnt">' +
+                             '<canvas id="myChartPie' + cont + '" width="800" height="600">' + '</canvas>');
+            var ctx = $('#myChartPie' + cont);
+            var pieChart = new Chart(ctx, {
+               type: 'pie',
+               data: {
+                  labels: dataKeys,
+                  datasets: [{
+                     data: valArray,
+                     backgroundColor: ['orange', 'blue', 'pink', 'yellow']
+                  }]
+               }
+            });
+         }
       </script>
    </body>
 </html>
